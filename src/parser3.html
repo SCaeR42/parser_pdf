@@ -7,6 +7,10 @@
 
     <link rel='stylesheet' href='./../vendor/twbs/bootstrap/dist/css/bootstrap.min.css'>
     <script src='./../vendor/twbs/bootstrap/dist/js/bootstrap.bundle.min.js'></script>
+
+    <!-- Подключение PDF.js из CDN -->
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js'></script>
+
     <script src='js.js'></script>
 
     <style>
@@ -151,8 +155,6 @@
     </div>
 </main>
 
-<!-- Подключение PDF.js из CDN -->
-<script src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js'></script>
 <script>
     document.getElementById('pdfInput').addEventListener('change', async (event) => {
         const file = event.target.files[0];
