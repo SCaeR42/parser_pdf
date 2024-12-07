@@ -1,0 +1,22 @@
+{
+    "name": "scody/pdf_parser",
+    "description": "parser pdf file from HH",
+    "type": "project",
+    "require": {
+        "smalot/pdfparser": "dev-master",
+        "twbs/bootstrap": "5.2.3"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Scody\\PdfParser\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "SCaeR",
+            "email": "i@e2big.ru"
+        }
+    ],
+    "minimum-stability": "dev"
+}

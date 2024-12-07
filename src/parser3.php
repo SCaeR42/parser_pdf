@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang='en' data-bs-theme='dark'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>PDF Parser</title>
+
+    <link rel='stylesheet' href='./../vendor/twbs/bootstrap/dist/css/bootstrap.min.css'>
+    <script src='./../vendor/twbs/bootstrap/dist/js/bootstrap.bundle.min.js'></script>
+    <script src='js.js'></script>
+
+    <style>
+        textarea.form-control {
+            width: 100%;
+            resize: none; /* Опционально: запретить пользователю изменять размер */
+            min-height: 940px;
+        }
+
+        .ta-wrap {
+            /*height: 100%;*/
+            /*min-height: 650px;*/
+        }
+        .input-group-text{
+            min-width: 145px;
+        }
+    </style>
+
+</head>
+<body>
+
+<main>
+    <div class="container py-4">
+
+
+        <h1>Парсинг PDF</h1>
+
+
+        <br>
+        <div class='row align-items-md-stretch'>
+            <div class='col-md-6'>
+                <div class='mb-3 p-5 text-bg-dark rounded-3'>
+
+                    <input readonly='readonly' type='file' id='pdfInput'/>
+                    <button class='btn btn-primary' onclick="return document.getElementById('pdfInput').dispatchEvent(new Event('change'));">Распарсить</button>
+                </div>
+
+
+                <div class='p-5 bg-body-tertiary border rounded-3'>
+                    <div class='mb-3'>
+                        <h3>Кандидат</h3>
+                    </div>
+
+                    <div class='mb-3'>
+                        <div class='input-group'>
+                            <span class='input-group-text' id='name-label'>Имя</span>
+                            <input readonly='readonly' type='text' class='form-control' id='name' aria-describedby='basic-addon3 basic-addon4'>
+                        </div>
+                    </div>
+
+                    <div class='mb-3'>
+                        <div class='input-group'>
+                            <span class='input-group-text' id='family-label'>Фамилия</span>
+                            <input readonly='readonly' type='text' class='form-control' id='family' aria-describedby='basic-addon3 basic-addon4'>
+                        </div>
+                    </div>
+
+                    <div class='mb-3'>
+                        <div class='input-group'>
+                            <span class='input-group-text' id='secondname-label'>Отчество</span>
+                            <input readonly='readonly' type='text' class='form-control' id='secondname' aria-describedby='basic-addon3 basic-addon4'>
+                        </div>
+                    </div>
+
+                    <div class='mb-3'>
+                        <div class='input-group'>
+                            <span class='input-group-text' id='sex-label'>Пол</span>
+                            <input readonly='readonly' type='text' class='form-control' id='sex' aria-describedby='basic-addon3 basic-addon4'>
+                        </div>
+                    </div>
+
+                    <div class='mb-3'>
+                        <div class='input-group'>
+                            <span class='input-group-text' id='age-label'>Возраст</span>
+                            <input readonly='readonly' type='text' class='form-control' id='age' aria-describedby='basic-addon3 basic-addon4'>
+                        </div>
+                    </div>
+
+                    <div class='mb-3'>
+                        <div class='input-group'>
+                            <span class='input-group-text' id='birthday-label'>Дата рождения</span>
+                            <input readonly='readonly' type='text' class='form-control' id='birthday' aria-describedby='basic-addon3 basic-addon4'>
+                        </div>
+                    </div>
+
+                    <div class='mb-3'>
+                        <h3>Контакты</h3>
+                    </div>
+
+                    <div class='mb-3'>
+                        <div class='input-group'>
+                            <span class='input-group-text' id='email-label'>Email</span>
+                            <input readonly='readonly' type='text' class='form-control' id='email' aria-describedby='basic-addon3 basic-addon4'>
+                        </div>
+                    </div>
+
+                    <div class='mb-3'>
+                        <div class='input-group'>
+                            <span class='input-group-text' id='phone-label'>Телефон</span>
+                            <input readonly='readonly' type='text' class='form-control' id='phone' aria-describedby='basic-addon3 basic-addon4'>
+                        </div>
+                    </div>
+
+
+                    <div class='mb-3'>
+                        <h3>Общее</h3>
+                    </div>
+
+                    <div class='mb-3'>
+                        <div class='input-group'>
+                            <span class='input-group-text' id='experience-label'>Опыт работы</span>
+                            <input readonly='readonly' type='text' class='form-control' id='experience' aria-describedby='basic-addon3 basic-addon4'>
+                        </div>
+                    </div>
+
+                    <div class='mb-3'>
+                        <div class='input-group'>
+                            <span class='input-group-text' id='education-label'>Образование</span>
+                            <input readonly='readonly' type='text' class='form-control' id='education' aria-describedby='basic-addon3 basic-addon4'>
+                        </div>
+                    </div>
+
+                    <div class='mb-3'>
+                        <div class='input-group'>
+                            <span class='input-group-text' id='skills-label'>Навыки</span>
+                            <!--                            <input readonly='readonly' type='text' class='form-control' id='skillsghgf' aria-describedby='basic-addon3 basic-addon4'>-->
+
+                            <textara readonly='readonly' class='form-control' id='skills'></textara>
+                        </div>
+                    </div>
+
+
+                </div>
+
+            </div>
+            <div class='col-md-6'>
+                <div class='p-5 bg-body-tertiary border rounded-3 ta-wrap'>
+                    <textarea readonly='readonly' class='form-control min-vh-50' id='output'></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Подключение PDF.js из CDN -->
+<script src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js'></script>
+<script>
+    document.getElementById('pdfInput').addEventListener('change', async (event) => {
+        const file = event.target.files[0];
+        const output = document.getElementById('output');
+        output.textContent = 'Загрузка PDF...';
+
+        if (file) {
+            const fileURL = URL.createObjectURL(file);
+
+            // Инициализация PDF.js
+            const loadingTask = pdfjsLib.getDocument(fileURL);
+            const pdf = await loadingTask.promise;
+
+            output.textContent = ''; // Очистить вывод
+
+            // Перебор страниц
+            for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
+                const page = await pdf.getPage(pageNumber);
+                const textContent = await page.getTextContent();
+
+                output.textContent += `Страница ${pageNumber}:\n`;
+
+                // Группировка текста по строкам
+                const lines = groupTextByLines(textContent.items);
+                lines.forEach(line => {
+                    output.textContent += line + '\n';
+                });
+
+                output.textContent += '\n';
+            }
+
+            let fullName = findLinesAroundKeyPhrase(output.textContent, 'родил', 1)[0];
+            let arFullName = fullName.split(' ');
+
+            document.getElementById('name').value = arFullName[1];
+            document.getElementById('family').value = arFullName[0];
+            document.getElementById('secondname').value = arFullName[2] || '';
+
+            let sexAge = findSubstringEndingWith(output.textContent, 'родил');
+            let arSexAge = sexAge.split(',');
+
+            document.getElementById('sex').value = arSexAge[0] || '';
+            document.getElementById('age').value = arSexAge[1] || '';
+            document.getElementById('birthday').value = findSubstringStartingWith(output.textContent, 'родился|родилась');
+            document.getElementById('phone').value = findLinesAroundKeyPhrase(output.textContent, ' — предпочитаемый способ связи', 1);
+            document.getElementById('email').value = findSubstringEndingWith(output.textContent, ' — предпочитаемый способ связи');
+
+            document.getElementById('experience').value = findSubstringStartingWith(output.textContent, 'Опыт работы —');
+            document.getElementById('education').value = findLinesAroundKeyPhrase(output.textContent, 'Образование', 1, false);
+
+            let skills = findLinesBetweenPhrases(output.textContent, 'Знание языков', 'Дополнительная информация', 3);
+
+            document.getElementById('skills').textContent = skills.toString();
+
+            output.textContent += 'Готово!';
+        } else {
+            output.textContent = 'Выберите файл.';
+        }
+    });
+
+    // Функция группировки текста по строкам
+    function groupTextByLines(items) {
+        const tolerance = 2; // Допустимое отклонение по вертикали для одной строки
+        const linesMap = new Map();
+
+        items.forEach(item => {
+            const [x, y] = item.transform.slice(4, 6); // Координаты текста
+            const text = item.str;
+
+            // Поиск строки с близкой координатой `y`
+            let lineKey = [...linesMap.keys()].find(key => Math.abs(key - y) <= tolerance);
+            if (!lineKey) {
+                lineKey = y; // Если строки нет, создать новую
+                linesMap.set(lineKey, []);
+            }
+
+            linesMap.get(lineKey).push({ x, text });
+        });
+
+        // Сортировка строк по `y` и сортировка элементов строки по `x`
+        const sortedLines = [...linesMap.entries()].sort((a, b) => b[0] - a[0]) // Сортировка по `y` (обратный порядок)
+            .map(([_, lineItems]) =>
+                lineItems.sort((a, b) => a.x - b.x) // Сортировка по `x`
+                    .map(item => item.text).join(''), // Объединение текста в строку
+            );
+
+        return sortedLines;
+    }
+
+    //     const text = `Первая строка
+    // Вторая строка
+    // Третья строка
+    // Четвёртая строка
+    // Пятая строка`;
+    //
+    //     // Пример: найти подстроку, которая начинается с "Третья"
+    //     console.log(findSubstringStartingWith(text, 'Третья')); // Третья строка\nЧетвёртая строка\nПятая строка
+    //
+    //     // Пример: найти подстроку, которая заканчивается на "Четвёртая"
+    //     console.log(findSubstringEndingWith(text, 'Четвёртая')); // Первая строка\nВторая строка\nТретья строка\nЧетвёртая строка
+    //
+    //     // Пример: 2 строки до строки с "Четвёртая"
+    //     console.log(findLinesAroundKeyPhrase(text, 'Четвёртая', 2, true)); // [ 'Вторая строка', 'Третья строка' ]
+    //
+    //     // Пример: 2 строки после строки с "Третья"
+    //     console.log(findLinesAroundKeyPhrase(text, 'Третья', 2, false)); // [ 'Четвёртая строка', 'Пятая строка' ]
+    //
+    //     // Пример: строки между "Вторая" и "Пятая", максимум 3 строки
+    //     console.log(findLinesBetweenPhrases(text, 'Вторая', 'Пятая', 3)); // [ 'Третья строка', 'Четвёртая строка' ]
+
+</script>
+</body>
+</html>
